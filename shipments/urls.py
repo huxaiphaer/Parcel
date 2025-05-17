@@ -4,5 +4,5 @@ from shipments.views import ShipmentDetailView
 
 urlpatterns = [
 
-    path("shipments/", ShipmentDetailView.as_view(), name="shipments"),
+    path("shipments/<str:tracking_number>/<str:carrier>/", ShipmentDetailView.as_view(), name="shipments"),
 ]
