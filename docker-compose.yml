@@ -9,3 +9,18 @@ services:
       - ./backend:/app
     env_file:
       - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: parcels
+      POSTGRES_USER: parcelsuser
+      POSTGRES_PASSWORD: securepassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

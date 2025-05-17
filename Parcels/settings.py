@@ -85,8 +85,12 @@ WSGI_APPLICATION = "Parcels.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "parcels"),
+        "USER": os.getenv("POSTGRES_USER", "parcelsuser"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "securepassword"),
+        "HOST": os.getenv("DB_HOST", "db"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
