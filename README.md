@@ -9,8 +9,8 @@ This project is a Django-based backend API for tracking parcel shipments and ret
 - Weather data via OpenWeatherMap (with 2-hour caching)
 - Modular structure (Shipments, Weather)
 - Dockerized setup
-- OpenAPI (planned)
-- Test coverage (planned)
+- OpenAPI 
+- Test coverage
 
 ## Setup (Local)
 
@@ -35,8 +35,21 @@ GET /api/shipments/TN12345678/DHL/
 
 ## Environment Variables
 
+Create a .env file and the following envs
+
+
 - SECRET_KEY
 - OPENWEATHERMAP_API_KEY
+- SECRET_KEY
+- DEBUG=true
+- POSTGRES_DB=parcels
+- POSTGRES_USER
+- POSTGRES_PASSWORD
+
+### Running tests with docker.
+```
+docker compose exec web pytest 
+```
 
 ## License.
 MIT
