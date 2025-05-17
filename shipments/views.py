@@ -1,5 +1,6 @@
 import re
 
+from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,10 +12,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+@extend_schema(
+    responses={200: ShipmentSerializer}
+)
 class ShipmentDetailView(APIView):
     """Shipment Detail View."""
-
-    import re
+    serializer_class = ShipmentSerializer
 
     @staticmethod
     def extract_city(receiver_address: str) -> str:
@@ -42,7 +46,7 @@ class ShipmentDetailView(APIView):
             if not shipment:
                 return Response({"error": "Shipment not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            data = ShipmentSerializer(shipment).data
+            data = self.serializer_class(shipment).data
             city = self.extract_city(receiver_address=shipment.receiver_address)
 
             try:

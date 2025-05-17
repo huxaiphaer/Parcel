@@ -44,6 +44,8 @@ INSTALLED_APPS = [
 
     # Third-party apps
     "django_extensions",
+    "drf_spectacular",
+    "rest_framework",
 
     # Local apps
     "shipments",
@@ -126,6 +128,17 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Parcel Track & Trace API",
+    "DESCRIPTION": "Track shipments and get live weather info",
+    "VERSION": "1.0.0",
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
