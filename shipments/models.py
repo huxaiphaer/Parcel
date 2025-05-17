@@ -5,6 +5,21 @@ from django_extensions.db.models import TimeStampedModel
 
 
 class Shipment(TimeStampedModel, SoftDeleteModel):
+
+    class Carrier(models.TextChoices):
+        DHL = "DHL"
+        UPS = "UPS"
+        DPD = "DPD"
+        FEDEX = "FedEx"
+        GLS = "GLS"
+
+    class Status(models.TextChoices):
+        IN_TRANSIT = "in-transit", "In Transit"
+        INBOUND_SCAN = "inbound-scan", "Inbound Scan"
+        DELIVERY = "delivery", "Delivery"
+        TRANSIT = "transit", "Transit"
+        SCANNED = "scanned", "Scanned"
+
     uuid = models.UUIDField(
         unique=True,
         max_length=500,
@@ -15,10 +30,10 @@ class Shipment(TimeStampedModel, SoftDeleteModel):
         null=False,
     )
     tracking_number = models.CharField(max_length=50)
-    carrier = models.CharField(max_length=50)
+    carrier = models.CharField(max_length=10, choices=Carrier.choices)
     sender_address = models.TextField()
     receiver_address = models.TextField()
-    status = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, choices=Status.choices)
 
 
 class Article(TimeStampedModel, SoftDeleteModel):
