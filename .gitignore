@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Virtual Environments
+env/
+venv/
+ENV/
+*.egg-info/
+
+# IDEs
+.idea/
+.vscode/
+
+# OS Files
+.DS_Store
+
+# Django Specific
+*.db
+*.sqlite3
+/media/
+/staticfiles/
+/node_modules/
+
+# Env
+.env
+.env.*
+
+# Docker
+*.pid
+*.bak
+*.swp
+docker-compose.override.yml
