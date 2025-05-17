@@ -1,12 +1,15 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+
+from weather.services import get_weather
 from .models import Shipment
 from .serializers import ShipmentSerializer
-from .services import get_weather
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ShipmentDetailView(APIView):
-
     """Shipment Detail View."""
 
     def get(self, request, tracking_number, carrier):
@@ -14,9 +17,20 @@ class ShipmentDetailView(APIView):
             shipment = Shipment.objects.prefetch_related('articles').filter(
                 tracking_number=tracking_number, carrier=carrier
             ).first()
+
+            if not shipment:
+                return Response({"error": "Shipment not found"}, status=status.HTTP_404_NOT_FOUND)
+
             data = ShipmentSerializer(shipment).data
             city = shipment.receiver_address.split(",")[-2].strip()
-            data["weather"] = get_weather(city)
+            try:
+                data["weather"] = get_weather(city)
+            except Exception as weather_ex:
+                logger.warning(f"Failed to fetch weather for {city}: {weather_ex}")
+                data["weather"] = {"error": "Weather data unavailable"}
+
             return Response(data)
+
         except Exception as ex:
-            raise ex
+            logger.error(f"Unhandled error in ShipmentDetailView: {ex}", exc_info=True)
+            return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
