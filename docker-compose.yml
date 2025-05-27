@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   web:
     build: .
@@ -7,12 +5,58 @@ services:
       - "9000:9000"
     env_file:
       - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=Parcels.settings
     depends_on:
       - db
+      - redis
     command: >
       sh -c "/wait-for-postgres.sh db python manage.py migrate &&
-             python manage.py load_seed_data --csv=data/seed_shipments.csv &&
              python manage.py runserver 0.0.0.0:9000"
+    volumes:
+      - .:/app
+
+  celery:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: celery -A Parcels worker --loglevel=info
+    volumes:
+      - .:/app
+
+  celery_beat:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: celery -A Parcels beat --loglevel=info
+    volumes:
+      - .:/app
+
+  flower:
+    build: .
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    command: celery -A Parcels flower --port=5555
+    volumes:
+      - .:/app
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
 
   db:
     image: postgres:15
@@ -26,3 +70,4 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
