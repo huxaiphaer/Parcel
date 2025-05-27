@@ -46,7 +46,7 @@ inv flake8
 ```
 
 # Access endpoints.
-[Swagger Endpoints](http://localhost:8000/api/v1/shipments/)
+[Swagger Endpoints](http://0.0.0.0:9000/api/schema/swagger-ui/)
 
 ## Environment Variables
 
