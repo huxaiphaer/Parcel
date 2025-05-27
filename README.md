@@ -30,26 +30,14 @@ docker-compose up --build
 API Example
 
 ```bash
-GET /api/shipments/TN12345678/DHL/
+GET /api/v1/shipments/TN12345678/DHL/
 ```
 
 ## Environment Variables
 
-Create a .env file and the following envs
-
-
-- SECRET_KEY
-- OPENWEATHERMAP_API_KEY
-- SECRET_KEY
-- DEBUG=true
-- POSTGRES_DB=parcels
-- POSTGRES_USER
-- POSTGRES_PASSWORD
+Create a .env file and the following envs inside the .env.example file for reference.
 
 ### Running tests with docker.
 ```
-docker compose exec web pytest 
+docker compose run --rm web pytest
 ```
-
-## License.
-MIT
