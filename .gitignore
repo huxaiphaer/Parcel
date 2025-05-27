@@ -33,3 +33,10 @@ ENV/
 *.bak
 *.swp
 docker-compose.override.yml
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+celerybeat.lock
+celery_worker.pid
+celery_worker.log
