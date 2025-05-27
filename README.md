@@ -12,7 +12,7 @@ This project is a Django-based backend API for tracking parcel shipments and ret
 - OpenAPI 
 - Test coverage
 
-## Setup (Local)
+## Setup (Local) (Mac / Linux)
 
 ```bash
 python3 -m venv env
@@ -24,18 +24,17 @@ python manage.py runserver
 ## Setup (Docker)
 
 ```bash
-docker-compose up --build
+docker compose up 
 ```
 
-API Example
-
-```bash
-GET /api/v1/shipments/TN12345678/DHL/
-```
+# Access endpoints.
+[Swagger Endpoints](http://localhost:8000/api/v1/shipments/)
 
 ## Environment Variables
 
 Create a .env file and the following envs inside the .env.example file for reference.
+
+
 
 ### Running tests with docker.
 ```
