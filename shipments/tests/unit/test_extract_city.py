@@ -1,5 +1,7 @@
 import pytest
+
 from shipments.views import ShipmentDetailView
+
 
 @pytest.mark.django_db
 class TestExtractCity:

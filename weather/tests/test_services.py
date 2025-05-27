@@ -1,5 +1,7 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+
 from weather.services import get_weather
 
 
@@ -8,6 +10,7 @@ class TestGetWeather:
 
     def setup_method(self):
         from django.core.cache import cache
+
         cache.clear()
 
     @patch("weather.services.requests.get")

@@ -10,10 +10,13 @@ class TestShipmentDetailView:
 
     def test_shipment_detail_success(self, valid_shipment_with_articles):
         shipment = valid_shipment_with_articles
-        url = reverse("v1:shipments", kwargs={
-            "tracking_number": shipment.tracking_number,
-            "carrier": shipment.carrier
-        })
+        url = reverse(
+            "v1:shipments",
+            kwargs={
+                "tracking_number": shipment.tracking_number,
+                "carrier": shipment.carrier,
+            },
+        )
 
         response = self.client.get(url)
 
@@ -22,24 +25,34 @@ class TestShipmentDetailView:
         assert "articles" in response.data
         assert len(response.data["articles"]) == shipment.articles.count()
 
-    def test_shipment_not_found_invalid_tracking(self, valid_shipment_with_articles):
+    def test_shipment_not_found_invalid_tracking(
+        self, valid_shipment_with_articles
+    ):
         shipment = valid_shipment_with_articles
-        url = reverse("v1:shipments", kwargs={
-            "tracking_number": "INVALID123",
-            "carrier": shipment.carrier
-        })
+        url = reverse(
+            "v1:shipments",
+            kwargs={
+                "tracking_number": "INVALID123",
+                "carrier": shipment.carrier,
+            },
+        )
 
         response = self.client.get(url)
 
         assert response.status_code == 404
         assert response.data["error"] == "Shipment not found"
 
-    def test_shipment_not_found_invalid_carrier(self, valid_shipment_with_articles):
+    def test_shipment_not_found_invalid_carrier(
+        self, valid_shipment_with_articles
+    ):
         shipment = valid_shipment_with_articles
-        url = reverse("v1:shipments", kwargs={
-            "tracking_number": shipment.tracking_number,
-            "carrier": "FAKECARRIER"
-        })
+        url = reverse(
+            "v1:shipments",
+            kwargs={
+                "tracking_number": shipment.tracking_number,
+                "carrier": "FAKECARRIER",
+            },
+        )
 
         response = self.client.get(url)
 
@@ -48,10 +61,13 @@ class TestShipmentDetailView:
 
     def test_shipment_with_no_articles(self, shipment_without_articles):
         shipment = shipment_without_articles
-        url = reverse("v1:shipments", kwargs={
-            "tracking_number": shipment.tracking_number,
-            "carrier": shipment.carrier
-        })
+        url = reverse(
+            "v1:shipments",
+            kwargs={
+                "tracking_number": shipment.tracking_number,
+                "carrier": shipment.carrier,
+            },
+        )
 
         response = self.client.get(url)
 
