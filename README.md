@@ -27,6 +27,24 @@ python manage.py runserver
 docker compose up 
 ```
 
+
+## Code Formatting & Linting.
+To ensure consistent code style and quality, use the following commands (requires invoke , black , isort , and flake8 ):
+
+```
+# Format and lint the codebase
+inv format
+
+# Run only Black
+inv black
+
+# Run only isort
+inv isort
+
+# Run only flake8
+inv flake8
+```
+
 # Access endpoints.
 [Swagger Endpoints](http://localhost:8000/api/v1/shipments/)
 
