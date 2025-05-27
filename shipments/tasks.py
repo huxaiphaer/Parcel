@@ -1,9 +1,11 @@
 import csv
-import os
 import logging
-from django.db import transaction
+import os
+
 from celery import shared_task
-from .models import Shipment, Article
+from django.db import transaction
+
+from .models import Article, Shipment
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,7 @@ def process_csv_row(row, row_num):
     Returns: (shipment_created, article_created, error_message)
     """
     try:
-        tracking_number = row['tracking_number'].strip()
+        tracking_number = row["tracking_number"].strip()
         if not tracking_number:
             return False, False, f"Row {row_num}: Empty tracking number"
 
@@ -26,22 +28,22 @@ def process_csv_row(row, row_num):
         shipment, shipment_created = Shipment.objects.get_or_create(
             tracking_number=tracking_number,
             defaults={
-                'carrier': row.get('carrier', '').strip(),
-                'sender_address': row.get('sender_address', '').strip(),
-                'receiver_address': row.get('receiver_address', '').strip(),
-                'status': row.get('status', '').strip(),
-            }
+                "carrier": row.get("carrier", "").strip(),
+                "sender_address": row.get("sender_address", "").strip(),
+                "receiver_address": row.get("receiver_address", "").strip(),
+                "status": row.get("status", "").strip(),
+            },
         )
 
         # Create article
         article, article_created = Article.objects.get_or_create(
             shipment=shipment,
-            sku=row.get('SKU', '').strip(),
+            sku=row.get("SKU", "").strip(),
             defaults={
-                'name': row.get('article_name', '').strip(),
-                'quantity': int(row.get('article_quantity', 0)),
-                'price': float(row.get('article_price', 0.0)),
-            }
+                "name": row.get("article_name", "").strip(),
+                "quantity": int(row.get("article_quantity", 0)),
+                "price": float(row.get("article_price", 0.0)),
+            },
         )
 
         return shipment_created, article_created, None
@@ -70,7 +72,9 @@ def process_batch(batch_rows, batch_start_index):
             for idx, row in enumerate(batch_rows):
                 row_num = batch_start_index + idx + 1
 
-                shipment_created, article_created, error = process_csv_row(row, row_num)
+                shipment_created, article_created, error = process_csv_row(
+                    row, row_num
+                )
 
                 if error:
                     errors.append(error)
@@ -81,7 +85,9 @@ def process_batch(batch_rows, batch_start_index):
                     if article_created:
                         articles_created += 1
 
-            logger.info(f"Batch starting at row {batch_start_index + 1} completed successfully")
+            logger.info(
+                f"Batch starting at row {batch_start_index + 1} completed successfully"
+            )
 
     except Exception as e:
         batch_num = (batch_start_index // len(batch_rows)) + 1
@@ -101,21 +107,33 @@ def validate_csv_file(csv_path):
     Returns: (is_valid, error_message, required_columns)
     """
     required_columns = [
-        'tracking_number', 'carrier', 'sender_address',
-        'receiver_address', 'status', 'article_name',
-        'article_quantity', 'article_price', 'SKU'
+        "tracking_number",
+        "carrier",
+        "sender_address",
+        "receiver_address",
+        "status",
+        "article_name",
+        "article_quantity",
+        "article_price",
+        "SKU",
     ]
 
     if not os.path.exists(csv_path):
         return False, f"CSV file not found: {csv_path}", required_columns
 
     try:
-        with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        with open(csv_path, newline="", encoding="utf-8") as csvfile:
             reader = csv.DictReader(csvfile)
-            missing_columns = set(required_columns) - set(reader.fieldnames or [])
+            missing_columns = set(required_columns) - set(
+                reader.fieldnames or []
+            )
 
             if missing_columns:
-                return False, f"Missing required columns: {', '.join(missing_columns)}", required_columns
+                return (
+                    False,
+                    f"Missing required columns: {', '.join(missing_columns)}",
+                    required_columns,
+                )
 
         return True, None, required_columns
 
@@ -139,7 +157,7 @@ def load_seed_data_task(self, csv_path, batch_size=1000):
         is_valid, error_message, _ = validate_csv_file(csv_path)
         if not is_valid:
             logger.error(error_message)
-            return {'success': False, 'message': error_message}
+            return {"success": False, "message": error_message}
 
         logger.info(f"Starting seed data loading from {csv_path}")
 
@@ -148,19 +166,23 @@ def load_seed_data_task(self, csv_path, batch_size=1000):
         total_articles_created = 0
         all_errors = []
 
-        with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        with open(csv_path, newline="", encoding="utf-8") as csvfile:
             reader = csv.DictReader(csvfile)
             rows = list(reader)
             total_rows = len(rows)
 
-            logger.info(f"Processing {total_rows} rows in batches of {batch_size}")
+            logger.info(
+                f"Processing {total_rows} rows in batches of {batch_size}"
+            )
 
             # Process in batches
             for i in range(0, len(rows), batch_size):
-                batch = rows[i:i + batch_size]
+                batch = rows[i : i + batch_size]
                 batch_num = (i // batch_size) + 1
 
-                shipments_created, articles_created, errors = process_batch(batch, i)
+                shipments_created, articles_created, errors = process_batch(
+                    batch, i
+                )
 
                 total_shipments_created += shipments_created
                 total_articles_created += articles_created
@@ -168,12 +190,12 @@ def load_seed_data_task(self, csv_path, batch_size=1000):
 
                 # Update progress
                 self.update_state(
-                    state='PROGRESS',
+                    state="PROGRESS",
                     meta={
-                        'current': min(i + batch_size, total_rows),
-                        'total': total_rows,
-                        'batch': batch_num
-                    }
+                        "current": min(i + batch_size, total_rows),
+                        "total": total_rows,
+                        "batch": batch_num,
+                    },
                 )
 
         # Final results
@@ -190,15 +212,15 @@ def load_seed_data_task(self, csv_path, batch_size=1000):
         logger.info(success_msg)
 
         return {
-            'success': True,
-            'message': success_msg,
-            'total_rows': total_rows,
-            'shipments_created': total_shipments_created,
-            'articles_created': total_articles_created,
-            'errors': len(all_errors)
+            "success": True,
+            "message": success_msg,
+            "total_rows": total_rows,
+            "shipments_created": total_shipments_created,
+            "articles_created": total_articles_created,
+            "errors": len(all_errors),
         }
 
     except Exception as e:
         error_msg = f"Task failed: {str(e)}"
         logger.error(error_msg, exc_info=True)
-        return {'success': False, 'message': error_msg}
+        return {"success": False, "message": error_msg}

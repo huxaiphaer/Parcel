@@ -1,7 +1,9 @@
 import os
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Parcels.settings")
 
 from django.core.management.base import BaseCommand, CommandError
+
 from shipments.tasks import load_seed_data_task
 
 
@@ -10,14 +12,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--csv',
+            "--csv",
             type=str,
-            help='Path to the CSV file containing shipment data',
-            required=True
+            help="Path to the CSV file containing shipment data",
+            required=True,
         )
 
     def handle(self, *args, **options):
-        csv_path = options['csv']
+        csv_path = options["csv"]
 
         if not os.path.exists(csv_path):
             raise CommandError(f"CSV file not found: {csv_path}")
@@ -28,7 +30,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Task started successfully!\n"
-                f"Task ID: {task.id}\n"
+                f"Task started successfully!\n" f"Task ID: {task.id}\n"
             )
         )

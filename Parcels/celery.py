@@ -3,7 +3,6 @@ import os
 
 from celery import Celery
 from celery.signals import after_setup_logger
-
 from django.conf import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Parcels.settings")

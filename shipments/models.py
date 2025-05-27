@@ -1,7 +1,8 @@
-from django.db import models
-from django_softdelete.models import SoftDeleteModel
 import uuid as uuid
+
+from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from django_softdelete.models import SoftDeleteModel
 
 
 class Shipment(TimeStampedModel, SoftDeleteModel):
@@ -46,7 +47,9 @@ class Article(TimeStampedModel, SoftDeleteModel):
         blank=False,
         null=False,
     )
-    shipment = models.ForeignKey(Shipment, related_name='articles', on_delete=models.CASCADE)
+    shipment = models.ForeignKey(
+        Shipment, related_name="articles", on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=100)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
